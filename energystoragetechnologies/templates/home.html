@@ -1,0 +1,30 @@
+{% extends "layout.html" %}
+{% block content %}
+<h4>Welcome to the Energy Storage Technologies web app!</h4>
+<p>
+    To get information about a technology, klick on the "Technology Information" Tab in the header.
+    If you want to compare technologies instead, klick the "Technology Comparison Tab". In both cases, you can filter
+    the technologies, such that only technologies that match your requirements are shown. All values shown in this web
+    app have been found in recent literature. While in the technology information tab, you can find the sources by klicking
+    directly on the values. In the Technology Comparison Tab you can klick on the datapoints in the charts to find the
+    sources. If you want to use values for your project, it is highly recommended to read the "how to interpret the data"
+    section below.
+</p>
+
+<h4>
+    How to interpret the data
+</h4>
+
+<p>
+    The values for each parameter is given with a certain range. This range exists because of two reasons: On the one hand,
+    Every facility is different in size, application and other characteristics. This leads to a natural difference in each
+    parameter from project to project. On the other hand, there have usually been found multiple sources for the same values.
+    These sources might have given different values for the same parameters. This leads to a wider range in the values shown
+    on this website. As a consequence, values for which more sources were found tend to have a larger range. It is important to
+    realize, that this does not necessarily mean that these values have a higher variability in reality! In fact, the
+    uncertainty is even higher for values, for which only a few sources have been found. This is especially crucial to keep
+    in mind when looking at values with a very small range on this website. In most cases this means that only a small
+    number of sources (sometimes only a single source). In these cases it can definetely be possible to experience
+    parameters in reality that are outside of the parameter range given in this web app.
+</p>
+{% endblock content %}

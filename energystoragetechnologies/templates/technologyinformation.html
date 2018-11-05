@@ -1,0 +1,149 @@
+{% import "macros.html" as macro %}
+{% extends "layout.html" %}
+{% block content %}
+
+{% if nochoicealert %}
+<div class="alert alert-danger">
+     No technology found that meet all demands set in the filter
+</div>
+{% endif %}
+
+<div class="container">
+    <div class ="formdiv" id="informationform">
+        <form class="form" method="POST" action="">
+            {{ form.hidden_tag() }}
+            <div class="form-group">
+                <div class="row">
+                    <div class="col-3">
+                        <div>
+                            {{ form.SelectTechnologyField.label(class_="form-control-label") }}
+                        </div>
+                    </div>
+                    <div class="col-7">
+                        <div>
+                            {{ form.SelectTechnologyField(class_="form-control") }}
+                        </div>
+                    </div>
+                    <div class="col-2">
+                        <div>
+                            {{ form.submit(class_="btn btn-outline-info") }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {{ macro.filter(form) }}
+        </form>
+    </div>
+</div>
+
+{% if dangeralert %}
+<div class="alert alert-danger">
+     no data available for this combination of size and timescale
+</div>
+{% endif %}
+
+<br>
+
+<div id="techtitle">
+{{ techname}}
+</div>
+
+<br>
+
+<div class="container">
+    <div class="accordion" id="accordionExample">
+      <div class="card accordioncard">
+        <div class="card-header accordionheader" id="headingOne">
+            <h5 class="mb-0">
+                <span class="card-header-span">
+                    <button class="btn btn-link accordion-title" type="button" data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                      Technical Parameters
+                    </button>
+                </span>
+            </h5>
+        </div>
+
+        <div id="collapseOne" class="collapse show" aria-labelledby="headingOne" data-parent="#accordionExample">
+          <div class="card-body">
+              <div class="container">
+                <table class="table">
+                  <thead class="thead">
+                    <tr>
+                      <th scope="col">parameter</th>
+                      <th scope="col">value</th>
+                      <th scope="col">unit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for par in techvalues %}
+                  <tr>
+                      <th scope="row">{{ techvalues[par].name }}</th>
+                        <td><a href={{ techvalues[par].minsource.link }} target="_blank">
+                            {{ techvalues[par].min }}</a>
+                            - <a href={{ techvalues[par].maxsource.link }} target="_blank">
+                                {{ techvalues[par].max }} </a>
+                        </td>
+                      <td>{{ techvalues[par].unit }}</td>
+                  </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card accordioncard">
+        <div class="card-header accordionheader" id="headingTwo">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed accordion-title" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+              Economic Parameters
+            </button>
+          </h5>
+        </div>
+        <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
+          <div class="card-body">
+            <table class="table">
+                  <thead class="thead-light">
+                    <tr>
+                      <th scope="col">parameter</th>
+                      <th scope="col">value</th>
+                      <th scope="col">unit</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                  {% for par in economicvalues %}
+                  <tr>
+                      <th scope="row">{{ economicvalues[par].name }}</th>
+                        <td><a href={{ economicvalues[par].minsource.link }} target="_blank">
+                            {{ economicvalues[par].min }}</a>
+                            - <a href={{ economicvalues[par].maxsource.link }} target="_blank">
+                                {{ economicvalues[par].max }} </a>
+                        </td>
+                      <td>{{ economicvalues[par].unit }}</td>
+                  </tr>
+                  {% endfor %}
+                  </tbody>
+                </table>
+          </div>
+        </div>
+      </div>
+      <div class="card accordioncard">
+        <div class="card-header accordionheader" id="headingThree">
+          <h5 class="mb-0">
+            <button class="btn btn-link collapsed accordion-title" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+              Collapsible Group Item #3
+            </button>
+          </h5>
+        </div>
+        <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
+          <div class="card-body">
+            Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+<br>
+
+{% endblock content %}

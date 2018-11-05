@@ -1,0 +1,350 @@
+{% macro filter(FilForm) %}
+
+<div class="accordionFilter" id="accordionFilter">
+  <div class="card accordioncardFilter">
+    <div class="card-header accordionheader" id="headingFilter">
+        <h5 class="mb-0">
+            <span class="card-header-span">
+                <button class="btn btn-link accordion-title" type="button" data-toggle="collapse" data-target="#collapseFilter" aria-expanded="true" aria-controls="collapseFilter">
+                  Filter
+                </button>
+            </span>
+        </h5>
+    </div>
+    <div id="collapseFilter" class="collapse" aria-labelledby="headingFilter" data-parent="#accordionFilter">
+      <div class="card-body" id="AccordioncardFilterBody">
+        <div class="container-fluid" align="left">
+            <form class="form" method="POST" action="">
+                {{ FilForm.hidden_tag() }}
+                <div class="row">
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                            {{ FilForm.energy_capacity_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                        {% if FilForm.energy_capacity_Field.errors %}
+                        {{ FilForm.energy_capacity_Field(class_="form-control filterstringfield is-invalid") }}
+                        <div class=invalid-feedback">
+                            {% for error in FilForm.energy_capacity_Field.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ FilForm.energy_capacity_Field(class_="form-control filterstringfield") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterelements">
+                        <div>
+                            MWh
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                            {{ FilForm.power_capacity_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                        {% if FilForm.power_capacity_Field.errors %}
+                        {{ FilForm.power_capacity_Field(class_="form-control filterstringfield is-invalid") }}
+                        <div class=invalid-feedback">
+                            {% for error in FilForm.power_capacity_Field.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ FilForm.power_capacity_Field(class_="form-control filterstringfield") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterelements">
+                        <div>
+                            MW
+                        </div>
+                    </div>
+                    <div class="col-5 filterselectelements">
+                        <div class="form-group">
+                            {{ FilForm.discharge_time_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5 filterselectelements">
+                        <div class="form-group">
+                            {{ FilForm.discharge_time_Field(class_="form-control filterselectfield") }}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterselectelements">
+                        <div>
+
+                        </div>
+                    </div>
+                    <div class="col-5 filterselectelements">
+                        <div class="form-group">
+                            {{ FilForm.response_time_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5 filterselectelements">
+                        <div class="form-group">
+                            {{ FilForm.response_time_Field(class_="form-control filterselectfield") }}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterselectelements">
+                        <div>
+
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                            {{ FilForm.efficiency_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                        {% if FilForm.efficiency_Field.errors %}
+                        {{ FilForm.efficiency_Field(class_="form-control filterstringfield is-invalid") }}
+                        <div class=invalid-feedback">
+                            {% for error in FilForm.efficiency_Field.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ FilForm.efficiency_Field(class_="form-control filterstringfield") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterelements">
+                        <div>
+                            %
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                            {{ FilForm.gravimetric_power_density_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                        {% if FilForm.gravimetric_power_density_Field.errors %}
+                        {{ FilForm.gravimetric_power_density_Field(class_="form-control filterstringfield is-invalid") }}
+                        <div class=invalid-feedback">
+                            {% for error in FilForm.gravimetric_power_density_Field.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ FilForm.gravimetric_power_density_Field(class_="form-control filterstringfield") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterelements">
+                        <div>
+                            W/kg
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                            {{ FilForm.volumetric_power_density_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                        {% if FilForm.volumetric_power_density_Field.errors %}
+                        {{ FilForm.volumetric_power_density_Field(class_="form-control filterstringfield is-invalid") }}
+                        <div class=invalid-feedback">
+                            {% for error in FilForm.volumetric_power_density_Field.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ FilForm.volumetric_power_density_Field(class_="form-control filterstringfield") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterelements">
+                        <div>
+                            kW/m3
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                            {{ FilForm.gravimetric_energy_density_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                        {% if FilForm.gravimetric_energy_density_Field.errors %}
+                        {{ FilForm.gravimetric_energy_density_Field(class_="form-control filterstringfield is-invalid") }}
+                        <div class=invalid-feedback">
+                            {% for error in FilForm.gravimetric_energy_density_Field.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ FilForm.gravimetric_energy_density_Field(class_="form-control filterstringfield") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterelements">
+                        <div>
+                            Wh/kg
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                            {{ FilForm.volumetric_energy_density_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                        {% if FilForm.volumetric_energy_density_Field.errors %}
+                        {{ FilForm.volumetric_energy_density_Field(class_="form-control filterstringfield is-invalid") }}
+                        <div class=invalid-feedback">
+                            {% for error in FilForm.volumetric_energy_density_Field.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ FilForm.volumetric_energy_density_Field(class_="form-control filterstringfield") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterelements">
+                        <div>
+                            kWh/m3
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                            {{ FilForm.calendar_lifetime_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                        {% if FilForm.calendar_lifetime_Field.errors %}
+                        {{ FilForm.calendar_lifetime_Field(class_="form-control filterstringfield is-invalid") }}
+                        <div class=invalid-feedback">
+                            {% for error in FilForm.calendar_lifetime_Field.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ FilForm.calendar_lifetime_Field(class_="form-control filterstringfield") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterelements">
+                        <div>
+                            years
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                            {{ FilForm.cycle_lifetime_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                        {% if FilForm.cycle_lifetime_Field.errors %}
+                        {{ FilForm.cycle_lifetime_Field(class_="form-control filterstringfield is-invalid") }}
+                        <div class=invalid-feedback">
+                            {% for error in FilForm.cycle_lifetime_Field.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ FilForm.cycle_lifetime_Field(class_="form-control filterstringfield") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterelements">
+                        <div>
+                            cycles
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                            {{ FilForm.capital_cost_powerspecific_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                        {% if FilForm.capital_cost_powerspecific_Field.errors %}
+                        {{ FilForm.capital_cost_powerspecific_Field(class_="form-control filterstringfield is-invalid") }}
+                        <div class=invalid-feedback">
+                            {% for error in FilForm.capital_cost_powerspecific_Field.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ FilForm.capital_cost_powerspecific_Field(class_="form-control filterstringfield") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterelements">
+                        <div>
+                            $/kW
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                            {{ FilForm.capital_cost_energyspecific_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                        {% if FilForm.capital_cost_energyspecific_Field.errors %}
+                        {{ FilForm.capital_cost_energyspecific_Field(class_="form-control filterstringfield is-invalid") }}
+                        <div class=invalid-feedback">
+                            {% for error in FilForm.capital_cost_energyspecific_Field.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ FilForm.capital_cost_energyspecific_Field(class_="form-control filterstringfield") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterelements">
+                        <div>
+                            $/kWh
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                            {{ FilForm.lcoes_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5">
+                        <div class="form-group filterelements">
+                        {% if FilForm.lcoes_Field.errors %}
+                        {{ FilForm.lcoes_Field(class_="form-control filterstringfield is-invalid") }}
+                        <div class=invalid-feedback">
+                            {% for error in FilForm.lcoes_Field.errors %}
+                            <span>{{ error }}</span>
+                            {% endfor %}
+                        </div>
+                        {% else %}
+                        {{ FilForm.lcoes_Field(class_="form-control filterstringfield") }}
+                        {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterelements">
+                        <div>
+                            $/kWh
+                        </div>
+                    </div>
+                </div>
+                <div class="form-group">
+                    {{ FilForm.submitfilter(class_="btn btn-outline-info FilterSubmitButton") }}
+                    <!-- <input type="reset" class="btn btn-outline-info" value="Clear all Filters"> -->
+                </div>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endmacro %}
