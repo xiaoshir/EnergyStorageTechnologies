@@ -1,4 +1,4 @@
-from energystoragetechnologies import app
+from energystoragetechnologies import application
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    application.run(debug=True)
