@@ -1,5 +1,5 @@
 from flask import render_template, url_for, redirect
-from energystoragetechnologies import application
+from energystoragetechnologies.wsgi import application
 from energystoragetechnologies.forms import SelectTechnologyForm, CompareTechnologiesForm
 from energystoragetechnologies.models import Technology, Parameter, Source
 from energystoragetechnologies.charts import drawfigure, drawdensityfigure, drawcapitalcostfigure
