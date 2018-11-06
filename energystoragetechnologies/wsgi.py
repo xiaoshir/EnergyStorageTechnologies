@@ -8,3 +8,6 @@ application.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///energystoragetechnolo
 db = SQLAlchemy(application)
 
 from energystoragetechnologies import routes
+
+if __name__ == '__main__':
+    application.run(debug=True)
