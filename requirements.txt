@@ -1,0 +1,5 @@
+gunicorn
+Flask
+pygal
+flask-wtf
+flask-SQLAlchemy
