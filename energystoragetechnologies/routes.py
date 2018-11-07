@@ -1,25 +1,25 @@
 from flask import render_template, url_for, redirect
-from energystoragetechnologies.wsgi import application
+from energystoragetechnologies import app
 from energystoragetechnologies.forms import SelectTechnologyForm, CompareTechnologiesForm
 from energystoragetechnologies.models import Technology, Parameter, Source
 from energystoragetechnologies.charts import drawfigure, drawdensityfigure, drawcapitalcostfigure
 
 
 # home route, shows home.html view
-@application.route("/")
-@application.route("/home")
+@app.route("/")
+@app.route("/home")
 def home():
     return render_template('home.html')
 
 
 # about route, shows about.html view
-@application.route("/about")
+@app.route("/about")
 def about():
     return render_template('about.html', title='About')
 
 
 # Technology information route, shows technologyinformation.html view
-@application.route("/technologyinformation", methods=['GET', 'POST'])
+@app.route("/technologyinformation", methods=['GET', 'POST'])
 def technologyinformation():
     form = SelectTechnologyForm()
     # definitions for filter
@@ -241,7 +241,7 @@ def orderlist(choicelist):
 
 
 # Technology comparison route, shows technologycomparison.html view
-@application.route("/technologycomparison", methods=['GET', 'POST'])
+@app.route("/technologycomparison", methods=['GET', 'POST'])
 def technologycomparison():
     form = CompareTechnologiesForm()
     # definitions for filter
