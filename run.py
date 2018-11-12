@@ -1,4 +1,4 @@
-from energystoragetechnologies.wsgi import application
+from energystoragetechnologies import app
 
 if __name__ == '__main__':
-    application.run(debug=True)
+    app.run(debug=True)
