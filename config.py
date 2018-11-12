@@ -5,3 +5,5 @@ threads = int(os.environ.get('GUNICORN_THREADS', '1'))
 
 forwarded_allow_ips = '*'
 secure_scheme_headers = { 'X-Forwarded-Proto': 'http' }
+
+SQLALCHEMY_DATABASE_URI = 'sqlite:///../energystoragetechnologies.db'
