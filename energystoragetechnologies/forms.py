@@ -33,8 +33,8 @@ class SelectTechnologyForm(FlaskForm):
     volumetric_energy_density_Field = StringField('Volumetric Energy Density', validators=[floatcheck])
     calendar_lifetime_Field = StringField('Calendar Lifetime', validators=[integercheck])
     cycle_lifetime_Field = StringField('Cycle Lifetime', validators=[integercheck])
-    capital_cost_energyspecific_Field = StringField('Energy Specific Capital Cost', validators=[floatcheck])
-    capital_cost_powerspecific_Field = StringField('Power Specific Capital Cost', validators=[floatcheck])
+    capital_cost_energyspecific_Field = StringField('Capital Cost Energy-Specific', validators=[floatcheck])
+    capital_cost_powerspecific_Field = StringField('Capital Cost Power-Specific', validators=[floatcheck])
     lcoes_Field = StringField('Levelized Cost of Energy Storage', validators=[floatcheck])
     submitfilter = SubmitField('apply filter')
 

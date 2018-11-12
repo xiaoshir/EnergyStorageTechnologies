@@ -12,10 +12,10 @@ def home():
     return render_template('home.html')
 
 
-# about route, shows about.html view
-@app.route("/about")
+# about route, shows contactus.html view
+@app.route("/contactus")
 def about():
-    return render_template('about.html', title='About')
+    return render_template('contactus.html', title='Contact Us')
 
 
 # Technology information route, shows technologyinformation.html view
@@ -43,6 +43,7 @@ def technologyinformation():
     form.response_time_Field.choices = response_time_converter.items()
     stringfieldlist = ["energy_capacity", "power_capacity", "efficiency", "gravimetric_power_density",
                        "volumetric_power_density", "gravimetric_energy_density", "volumetric_energy_density",
+                       "calendar_lifetime", "cycle_lifetime",
                        "capital_cost_energyspecific", "capital_cost_powerspecific", "lcoes"]
     selectfieldlist = ["discharge_time", "response_time"]
     # defaults
@@ -53,10 +54,13 @@ def technologyinformation():
     techname = techchoices[0].name
     techparlist = ["energy_capacity", "power_capacity", "efficiency", "discharge_time", "response_time",
                    "gravimetric_power_density", "volumetric_power_density", "gravimetric_energy_density",
-                   "volumetric_energy_density"]
+                   "volumetric_energy_density", "calendar_lifetime", "cycle_lifetime",]
     for par in techparlist:
         techvalues[par] = {
-            'name': par.replace('_', ' '),
+            'name': "round-trip efficiency" if par=="efficiency"
+                    else "capital cost energy-specific" if par=="capital_cost_energyspecific"
+                    else "capital cost power-specific" if par=="capital_cost_powerspecific"
+                    else par.replace('_', ' '),
             'min': "No data" if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value is None
              else (Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value
             if isinstance(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value,
@@ -78,7 +82,10 @@ def technologyinformation():
     economicparlist = ["capital_cost_energyspecific", "capital_cost_powerspecific", "lcoes"]
     for par in economicparlist:
         economicvalues[par] = {
-            'name': par.replace('_', ' '),
+            'name': "round-trip efficiency" if par=="efficiency"
+                    else "capital cost energy-specific" if par=="capital_cost_energyspecific"
+                    else "capital cost power-specific" if par=="capital_cost_powerspecific"
+                    else par.replace('_', ' '),
             'min': "No data" if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value is None
              else (Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value
             if isinstance(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value,
@@ -130,9 +137,12 @@ def technologyinformation():
                                 techchoices.remove(t)
         if len(techchoices)==0:
             nochoicealert=True
-        # trying to get indendations in the drop down
-        choicelist = [[t.id, t.name if t.level == 1 else ". . . " + t.name if t.level == 2 else ". . . . . . " + t.name]
-                      for t in techchoices]
+            choicelist = [[t.id, t.name if t.level == 1 else ". . . " + t.name if t.level == 2 else ". . . . . . " + t.name]
+                          for t in Technology.query.order_by('id')]
+        else:
+            # trying to get indendations in the drop down
+            choicelist = [[t.id, t.name if t.level == 1 else ". . . " + t.name if t.level == 2 else ". . . . . . " + t.name]
+                          for t in techchoices]
         # form.SelectTechnologyField.choices = [(t.id, t.name) for t in techchoices]
         form.SelectTechnologyField.choices = [tuple(choice) for choice in choicelist]
         # build dictionary to render template
@@ -143,7 +153,10 @@ def technologyinformation():
                      "volumetric_energy_density"]
         for par in techparlist:
             techvalues[par] = {
-                'name': par.replace('_', ' '),
+                'name': "round-trip efficiency" if par == "efficiency"
+                else "capital cost energy-specific" if par == "capital_cost_energyspecific"
+                else "capital cost power-specific" if par == "capital_cost_powerspecific"
+                else par.replace('_', ' '),
                 'min': "No data" if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value is None
                 else (Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value
                 if isinstance(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value,
@@ -165,7 +178,10 @@ def technologyinformation():
         economicparlist=["capital_cost_energyspecific", "capital_cost_powerspecific", "lcoes"]
         for par in economicparlist:
             economicvalues[par] = {
-                'name': par.replace('_', ' '),
+                'name': "round-trip efficiency" if par == "efficiency"
+                else "capital cost energy-specific" if par == "capital_cost_energyspecific"
+                else "capital cost power-specific" if par == "capital_cost_powerspecific"
+                else par.replace('_', ' '),
                 'min': "No data" if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value is None
                 else (Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value
                 if isinstance(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value,
