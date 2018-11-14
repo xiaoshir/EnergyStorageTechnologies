@@ -35,7 +35,7 @@ class SelectTechnologyForm(FlaskForm):
     cycle_lifetime_Field = StringField('Cycle Lifetime', validators=[integercheck])
     capital_cost_energyspecific_Field = StringField('Capital Cost Energy-Specific', validators=[floatcheck])
     capital_cost_powerspecific_Field = StringField('Capital Cost Power-Specific', validators=[floatcheck])
-    lcoes_Field = StringField('Levelized Cost of Energy Storage', validators=[floatcheck])
+    LCOES_Field = StringField('Levelized Cost of Energy Storage', validators=[floatcheck])
     submitfilter = SubmitField('apply filter')
 
 
@@ -55,7 +55,7 @@ class CompareTechnologiesForm(FlaskForm):
     cycle_lifetime_Field = StringField('Cycle Lifetime', validators=[integercheck])
     capital_cost_energyspecific_Field = StringField('Energy Specific Capital Cost', validators=[floatcheck])
     capital_cost_powerspecific_Field = StringField('Power Specific Capital Cost', validators=[floatcheck])
-    lcoes_Field = StringField('Levelized Cost of Energy Storage', validators=[floatcheck])
+    LCOES_Field = StringField('Levelized Cost of Energy Storage', validators=[floatcheck])
     submitfilter = SubmitField('apply filter')
 
 

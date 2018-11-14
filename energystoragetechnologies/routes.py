@@ -12,10 +12,39 @@ def home():
     return render_template('home.html')
 
 
-# about route, shows contactus.html view
-@app.route("/contactus")
+# about route, shows about.html view
+@app.route("/about")
 def about():
-    return render_template('contactus.html', title='Contact Us')
+    return render_template('about.html', title='About')
+
+def buildvaluedict(list, techname):
+    outputdict={}
+    for par in list:
+        outputdict[par] = {
+            'name': "round-trip efficiency" if par=="efficiency"
+                    else "capital cost energy-specific" if par=="capital_cost_energyspecific"
+                    else "capital cost power-specific" if par=="capital_cost_powerspecific"
+                    else "LCOES*" if par=="LCOES"
+                    else par.replace('_', ' '),
+            'min': "No data" if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value is None
+             else (Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value
+            if isinstance(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value,
+                int) else (int(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value)
+            if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value.is_integer()
+            else Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value)),
+            'minsource': Source.query.filter_by(id=Parameter.query.filter_by(technology_name=techname).filter_by(
+                name=par + "_min").first().source_id).first(),
+            'max': "No data" if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value is None
+             else (Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value
+            if isinstance(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value,
+                int) else (int(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value)
+            if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value.is_integer()
+            else Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value)),
+            'maxsource': Source.query.filter_by(id=Parameter.query.filter_by(technology_name=techname).filter_by(
+                name=par + "_max").first().source_id).first(),
+            'unit': Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().unit
+        }
+    return outputdict
 
 
 # Technology information route, shows technologyinformation.html view
@@ -44,66 +73,21 @@ def technologyinformation():
     stringfieldlist = ["energy_capacity", "power_capacity", "efficiency", "gravimetric_power_density",
                        "volumetric_power_density", "gravimetric_energy_density", "volumetric_energy_density",
                        "calendar_lifetime", "cycle_lifetime",
-                       "capital_cost_energyspecific", "capital_cost_powerspecific", "lcoes"]
+                       "capital_cost_energyspecific", "capital_cost_powerspecific", "LCOES"]
     selectfieldlist = ["discharge_time", "response_time"]
     # defaults
     nochoicealert=False
     techchoices = [t for t in Technology.query.order_by('id')]
-    techvalues = {}
-    economicvalues = {}
     techname = techchoices[0].name
     techparlist = ["energy_capacity", "power_capacity", "efficiency", "discharge_time", "response_time",
                    "gravimetric_power_density", "volumetric_power_density", "gravimetric_energy_density",
                    "volumetric_energy_density", "calendar_lifetime", "cycle_lifetime",]
-    for par in techparlist:
-        techvalues[par] = {
-            'name': "round-trip efficiency" if par=="efficiency"
-                    else "capital cost energy-specific" if par=="capital_cost_energyspecific"
-                    else "capital cost power-specific" if par=="capital_cost_powerspecific"
-                    else par.replace('_', ' '),
-            'min': "No data" if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value is None
-             else (Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value
-            if isinstance(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value,
-                int) else (int(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value)
-                if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value.is_integer()
-                else Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value)),
-            'minsource': Source.query.filter_by(id=Parameter.query.filter_by(technology_name=techname).filter_by(
-                name=par + "_min").first().source_id).first(),
-            'max': "No data" if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value is None
-             else (Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value
-            if isinstance(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value,
-                int) else (int(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value)
-                if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value.is_integer()
-                else Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value)),
-            'maxsource': Source.query.filter_by(id=Parameter.query.filter_by(technology_name=techname).filter_by(
-                name=par + "_max").first().source_id).first(),
-            'unit': Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().unit
-        }
-    economicparlist = ["capital_cost_energyspecific", "capital_cost_powerspecific", "lcoes"]
-    for par in economicparlist:
-        economicvalues[par] = {
-            'name': "round-trip efficiency" if par=="efficiency"
-                    else "capital cost energy-specific" if par=="capital_cost_energyspecific"
-                    else "capital cost power-specific" if par=="capital_cost_powerspecific"
-                    else par.replace('_', ' '),
-            'min': "No data" if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value is None
-             else (Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value
-            if isinstance(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value,
-                int) else (int(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value)
-            if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value.is_integer()
-            else Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value)),
-            'minsource': Source.query.filter_by(id=Parameter.query.filter_by(technology_name=techname).filter_by(
-                name=par + "_min").first().source_id).first(),
-            'max': "No data" if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value is None
-             else (Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value
-            if isinstance(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value,
-                int) else (int(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value)
-            if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value.is_integer()
-            else Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value)),
-            'maxsource': Source.query.filter_by(id=Parameter.query.filter_by(technology_name=techname).filter_by(
-                name=par + "_max").first().source_id).first(),
-            'unit': Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().unit
-        }
+
+    techvalues=buildvaluedict(techparlist, techname)
+    economicparlist = ["capital_cost_energyspecific", "capital_cost_powerspecific", "LCOES"]
+    economicvalues = buildvaluedict(economicparlist, techname)
+    environmentalparlist = ["life_cycle_greenhouse_gas_emissions"]
+    environmentalvalues = buildvaluedict(environmentalparlist, techname)
     #trying to get indendations in the drop down
     choicelist=[[t.id, t.name if t.level==1 else ". . . "+t.name if t.level==2 else ". . . . . . "+t.name] for t in techchoices]
     #form.SelectTechnologyField.choices = [(t.id, t.name) for t in techchoices]
@@ -148,64 +132,22 @@ def technologyinformation():
         # build dictionary to render template
         id = form.SelectTechnologyField.data
         techname = Technology.query.filter_by(id=id).first().name
-        techparlist=["energy_capacity", "power_capacity", "efficiency", "discharge_time", "response_time",
-                     "gravimetric_power_density", "volumetric_power_density", "gravimetric_energy_density",
-                     "volumetric_energy_density"]
-        for par in techparlist:
-            techvalues[par] = {
-                'name': "round-trip efficiency" if par == "efficiency"
-                else "capital cost energy-specific" if par == "capital_cost_energyspecific"
-                else "capital cost power-specific" if par == "capital_cost_powerspecific"
-                else par.replace('_', ' '),
-                'min': "No data" if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value is None
-                else (Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value
-                if isinstance(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value,
-                    int) else (int(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value)
-                if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value.is_integer()
-                else Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value)),
-                'minsource': Source.query.filter_by(id=Parameter.query.filter_by(technology_name=techname).filter_by(
-                    name=par+"_min").first().source_id).first(),
-                'max': "No data" if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value is None
-             else (Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value
-                if isinstance(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value,
-                    int) else (int(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value)
-                if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value.is_integer()
-                else Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value)),
-                'maxsource': Source.query.filter_by(id=Parameter.query.filter_by(technology_name=techname).filter_by(
-                    name=par + "_max").first().source_id).first(),
-                'unit': Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().unit
-            }
-        economicparlist=["capital_cost_energyspecific", "capital_cost_powerspecific", "lcoes"]
-        for par in economicparlist:
-            economicvalues[par] = {
-                'name': "round-trip efficiency" if par == "efficiency"
-                else "capital cost energy-specific" if par == "capital_cost_energyspecific"
-                else "capital cost power-specific" if par == "capital_cost_powerspecific"
-                else par.replace('_', ' '),
-                'min': "No data" if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value is None
-                else (Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value
-                if isinstance(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value,
-                    int) else (int(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value)
-                    if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value.is_integer()
-                    else Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().value)),
-                'minsource': Source.query.filter_by(id=Parameter.query.filter_by(technology_name=techname).filter_by(
-                    name=par+"_min").first().source_id).first(),
-                'max': "No data" if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value is None
-             else (Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value
-                if isinstance(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value,
-                    int) else (int(Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value)
-                    if Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value.is_integer()
-                    else Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_max").first().value)),
-                'maxsource': Source.query.filter_by(id=Parameter.query.filter_by(technology_name=techname).filter_by(
-                    name=par + "_max").first().source_id).first(),
-                'unit': Parameter.query.filter_by(technology_name=techname).filter_by(name=par + "_min").first().unit
-            }
+        techparlist = ["energy_capacity", "power_capacity", "efficiency", "discharge_time", "response_time",
+                       "gravimetric_power_density", "volumetric_power_density", "gravimetric_energy_density",
+                       "volumetric_energy_density", "calendar_lifetime", "cycle_lifetime", ]
+
+        techvalues = buildvaluedict(techparlist, techname)
+        economicparlist = ["capital_cost_energyspecific", "capital_cost_powerspecific", "LCOES"]
+        economicvalues = buildvaluedict(economicparlist, techname)
+        environmentalparlist = ["life_cycle_greenhouse_gas_emissions"]
+        environmentalvalues = buildvaluedict(environmentalparlist, techname)
     # render HTML
     return render_template('technologyinformation.html',
                            title='Technology Information',
                            form=form,
                            techvalues=techvalues,
                            economicvalues=economicvalues,
+                           environmentalvalues=environmentalvalues,
                            discharge_time_converter=discharge_time_converter,
                            response_time_converter=response_time_converter,
                            techname=techname,
@@ -281,7 +223,7 @@ def technologycomparison():
     form.response_time_Field.choices = response_time_converter.items()
     stringfieldlist = ["energy_capacity", "power_capacity", "efficiency", "gravimetric_power_density",
                        "volumetric_power_density", "gravimetric_energy_density", "volumetric_energy_density",
-                       "capital_cost_energyspecific", "capital_cost_powerspecific", "lcoes"]
+                       "capital_cost_energyspecific", "capital_cost_powerspecific", "LCOES"]
     selectfieldlist = ["discharge_time", "response_time"]
     # defaults
     notechalert=False
@@ -305,7 +247,7 @@ def technologycomparison():
     calendar_lifetime_fig = drawfigure(techlist, "calendar_lifetime")
     cycle_lifetime_fig = drawfigure(techlist, "cycle_lifetime")
     capital_cost_fig = drawcapitalcostfigure(techlist)
-    lcoes_fig = drawfigure(techlist, "lcoes")
+    lcoes_fig = drawfigure(techlist, "LCOES")
     # what happens if user klicks on compare or filter
     if form.validate_on_submit():
         # remove choices that are filtered out
@@ -374,7 +316,7 @@ def technologycomparison():
                 calendar_lifetime_fig = drawfigure(techlist, "calendar_lifetime")
                 cycle_lifetime_fig = drawfigure(techlist, "cycle_lifetime")
                 capital_cost_fig = drawcapitalcostfigure(techlist)
-                lcoes_fig = drawfigure(techlist, "lcoes")
+                lcoes_fig = drawfigure(techlist, "LCOES")
     return render_template('technologycomparison.html',
                            title='Technology Comparison',
                            form=form,

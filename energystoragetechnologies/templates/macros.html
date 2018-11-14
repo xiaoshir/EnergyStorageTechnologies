@@ -313,20 +313,20 @@
                     </div>
                     <div class="col-5">
                         <div class="form-group filterelements">
-                            {{ FilForm.lcoes_Field.label(class_="form-control-label filterlabel") }}
+                            {{ FilForm.LCOES_Field.label(class_="form-control-label filterlabel") }}
                         </div>
                     </div>
                     <div class="col-5">
                         <div class="form-group filterelements">
-                        {% if FilForm.lcoes_Field.errors %}
-                        {{ FilForm.lcoes_Field(class_="form-control filterstringfield is-invalid") }}
+                        {% if FilForm.LCOES_Field.errors %}
+                        {{ FilForm.LCOES_Field(class_="form-control filterstringfield is-invalid") }}
                         <div class=invalid-feedback">
-                            {% for error in FilForm.lcoes_Field.errors %}
+                            {% for error in FilForm.LCOES_Field.errors %}
                             <span>{{ error }}</span>
                             {% endfor %}
                         </div>
                         {% else %}
-                        {{ FilForm.lcoes_Field(class_="form-control filterstringfield") }}
+                        {{ FilForm.LCOES_Field(class_="form-control filterstringfield") }}
                         {% endif %}
                         </div>
                     </div>

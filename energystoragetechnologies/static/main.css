@@ -34,6 +34,10 @@ a{
     color: black;
 }
 
+.link_in_text{
+    color: blue;
+}
+
 /* technologyinformation and technologycomparison */
 .form-control-label{
   font-size: 18px;

@@ -5,6 +5,8 @@ class Technology(db.Model):
     name = db.Column(db.String(50), unique=True, nullable=False)
     parameter = db.relationship('Parameter', backref='technology', lazy=True)
     level = db.Column(db.Integer, nullable=False)
+    description = db.Column(db.String(10000))
+    diagram = db.Column(db.String(1000))
 
     def __repr__(self):
         return self.name
