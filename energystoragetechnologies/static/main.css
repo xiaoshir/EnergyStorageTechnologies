@@ -30,12 +30,8 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 500;
 }
 
-a{
+.tablelink{
     color: black;
-}
-
-.link_in_text{
-    color: blue;
 }
 
 /* technologyinformation and technologycomparison */
@@ -156,6 +152,11 @@ a{
 .thead{
     color: #ffffff;
     background-color: #264d73;
+}
+
+#techdiagram{
+    text-align:center;
+    margin-top:10px;
 }
 /* technologycomparison */
 #comparisonform{

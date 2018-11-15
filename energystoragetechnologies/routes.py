@@ -79,6 +79,11 @@ def technologyinformation():
     nochoicealert=False
     techchoices = [t for t in Technology.query.order_by('id')]
     techname = techchoices[0].name
+    techdescription = Technology.query.filter_by(name=techname).first().description
+    techdiagram=Technology.query.filter_by(name=techname).first().diagram
+    techdiagram_description=Technology.query.filter_by(name=techname).first().diagram_description
+    techdiagram_source=f" ({Source.query.filter_by(id=Technology.query.filter_by(name=techname).first().diagram_source_id).first().author}, {Source.query.filter_by(id=Technology.query.filter_by(name=techname).first().diagram_source_id).first().releaseyear})."
+    techdiagram_link=Source.query.filter_by(id=Technology.query.filter_by(name=techname).first().diagram_source_id).first().link
     techparlist = ["energy_capacity", "power_capacity", "efficiency", "discharge_time", "response_time",
                    "gravimetric_power_density", "volumetric_power_density", "gravimetric_energy_density",
                    "volumetric_energy_density", "calendar_lifetime", "cycle_lifetime",]
@@ -132,6 +137,11 @@ def technologyinformation():
         # build dictionary to render template
         id = form.SelectTechnologyField.data
         techname = Technology.query.filter_by(id=id).first().name
+        techdescription = Technology.query.filter_by(id=id).first().description
+        techdiagram = Technology.query.filter_by(name=techname).first().diagram
+        techdiagram_description = Technology.query.filter_by(name=techname).first().diagram_description
+        techdiagram_source = f" ({Source.query.filter_by(id=Technology.query.filter_by(name=techname).first().diagram_source_id).first().author}, {Source.query.filter_by(id=Technology.query.filter_by(name=techname).first().diagram_source_id).first().releaseyear})."
+        techdiagram_link = Source.query.filter_by(id=Technology.query.filter_by(name=techname).first().diagram_source_id).first().link
         techparlist = ["energy_capacity", "power_capacity", "efficiency", "discharge_time", "response_time",
                        "gravimetric_power_density", "volumetric_power_density", "gravimetric_energy_density",
                        "volumetric_energy_density", "calendar_lifetime", "cycle_lifetime", ]
@@ -151,6 +161,11 @@ def technologyinformation():
                            discharge_time_converter=discharge_time_converter,
                            response_time_converter=response_time_converter,
                            techname=techname,
+                           techdescription=techdescription,
+                           techdiagram=techdiagram,
+                           techdiagram_description=techdiagram_description,
+                           techdiagram_source=techdiagram_source,
+                           techdiagram_link=techdiagram_link,
                            nochoicealert=nochoicealert)
 
 
@@ -230,7 +245,8 @@ def technologycomparison():
     nochoicealert=False
     techchoices = [t for t in Technology.query.order_by('id')]
     #form.CompareTechnologiesField.data = [12, 19]
-    techlist = [Technology.query.filter_by(name="Pumped Hydro Energy Storage (PHES)").first(), Technology.query.filter_by(name="Compressed Air Energy Storage (CAES)").first()]
+    techlist = [Technology.query.filter_by(name="Pumped Hydro Energy Storage (PHES)").first(),
+                Technology.query.filter_by(name="Compressed Air Energy Storage (CAES)").first()]
     # generate list of choices
     form.CompareTechnologiesField.choices = [(t.id, t.name) for t in techchoices]
     choicelist = list(form.CompareTechnologiesField)

@@ -7,6 +7,8 @@ class Technology(db.Model):
     level = db.Column(db.Integer, nullable=False)
     description = db.Column(db.String(10000))
     diagram = db.Column(db.String(1000))
+    diagram_description = db.Column(db.String(10000))
+    diagram_source_id = db.Column(db.Integer, db.ForeignKey('source.id'), nullable=False)
 
     def __repr__(self):
         return self.name

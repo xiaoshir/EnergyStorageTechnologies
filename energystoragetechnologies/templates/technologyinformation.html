@@ -51,6 +51,19 @@
 <br>
 
 <div class="container">
+    {{ techdescription }}
+
+    <div id="techdiagram">
+        <img src=" ../static/images/{{ techdiagram }}" height="300">
+        <br>
+        {{ techdiagram_description }} <a href={{ techdiagram_link }} target="_blank"> {{ techdiagram_source }} </a>
+    </div>
+</div>
+
+
+<br>
+
+<div class="container">
     <div class="accordion" id="accordionExample">
       <div class="card accordioncard">
         <div class="card-header accordionheader" id="headingOne">
@@ -78,9 +91,9 @@
                   {% for par in techvalues %}
                   <tr>
                       <th scope="row">{{ techvalues[par].name }}</th>
-                        <td><a href={{ techvalues[par].minsource.link }} target="_blank">
+                        <td><a href={{ techvalues[par].minsource.link }} target="_blank" class="tablelink">
                             {{ techvalues[par].min }}</a>
-                            - <a href={{ techvalues[par].maxsource.link }} target="_blank">
+                            - <a href={{ techvalues[par].maxsource.link }} target="_blank" class="tablelink">
                                 {{ techvalues[par].max }} </a>
                         </td>
                       <td>{{ techvalues[par].unit }}</td>
@@ -114,9 +127,9 @@
               {% for par in economicvalues %}
               <tr>
                   <th scope="row">{{ economicvalues[par].name }}</th>
-                    <td><a href={{ economicvalues[par].minsource.link }} target="_blank">
+                    <td><a href={{ economicvalues[par].minsource.link }} target="_blank" class="tablelink">
                         {{ economicvalues[par].min }}</a>
-                        - <a href={{ economicvalues[par].maxsource.link }} target="_blank">
+                        - <a href={{ economicvalues[par].maxsource.link }} target="_blank" class="tablelink">
                             {{ economicvalues[par].max }} </a>
                     </td>
                   <td>{{ economicvalues[par].unit }}</td>
@@ -125,7 +138,7 @@
               </tbody>
             </table>
           *: <a href="https://www.researchgate.net/publication/260043756_The_Cost_of_Storage_-_How_to_Calculate_the_
-              Levelized_Cost_of_Stored_Energy_LCOE_and_Applications_to_Renewable_Energy_Generation" class="link_in_text">
+              Levelized_Cost_of_Stored_Energy_LCOE_and_Applications_to_Renewable_Energy_Generation">
               Levelized Cost of Energy Storage</a>
           </div>
         </div>
@@ -152,9 +165,9 @@
                   {% for par in environmentalvalues %}
                   <tr>
                       <th scope="row">{{ environmentalvalues[par].name }}</th>
-                        <td><a href={{ environmentalvalues[par].minsource.link }} target="_blank">
+                        <td><a href={{ environmentalvalues[par].minsource.link }} target="_blank" class="tablelink">
                             {{ environmentalvalues[par].min }}</a>
-                            - <a href={{ environmentalvalues[par].maxsource.link }} target="_blank">
+                            - <a href={{ environmentalvalues[par].maxsource.link }} target="_blank" class="tablelink">
                                 {{ environmentalvalues[par].max }} </a>
                         </td>
                       <td>{{ environmentalvalues[par].unit }}</td>
