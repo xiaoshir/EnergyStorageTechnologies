@@ -17,6 +17,21 @@
             <form class="form" method="POST" action="">
                 {{ FilForm.hidden_tag() }}
                 <div class="row">
+                    <div class="col-5 filterselectelements">
+                        <div class="form-group">
+                            {{ FilForm.applications_Field.label(class_="form-control-label filterlabel") }}
+                        </div>
+                    </div>
+                    <div class="col-5 filterselectelements">
+                        <div class="form-group">
+                            {{ FilForm.applications_Field(class_="form-control filterselectfield") }}
+                        </div>
+                    </div>
+                    <div class="col-2 filterunit filterselectelements">
+                        <div>
+
+                        </div>
+                    </div>
                     <div class="col-5">
                         <div class="form-group filterelements">
                             {{ FilForm.energy_capacity_Field.label(class_="form-control-label filterlabel") }}

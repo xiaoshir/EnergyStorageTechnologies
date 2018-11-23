@@ -22,6 +22,7 @@ class MultiCheckboxField(SelectMultipleField):
 class SelectTechnologyForm(FlaskForm):
     SelectTechnologyField = SelectField('Select Technology:', coerce=int)
     submit = SubmitField('apply')
+    applications_Field = SelectField('Application')
     energy_capacity_Field = StringField('Energy Capacity', validators=[floatcheck])
     power_capacity_Field = StringField('Power Capacity', validators=[floatcheck])
     discharge_time_Field = SelectField('Discharge Time', coerce=int)
@@ -42,6 +43,7 @@ class SelectTechnologyForm(FlaskForm):
 class CompareTechnologiesForm(FlaskForm):
     CompareTechnologiesField = MultiCheckboxField('Select Technologies to compare:', coerce=int, default=[1, 8])
     submit = SubmitField('compare')
+    applications_Field = SelectField('Application')
     energy_capacity_Field = StringField('Energy Capacity', validators=[floatcheck])
     power_capacity_Field = StringField('Power Capacity', validators=[floatcheck])
     discharge_time_Field = SelectField('Discharge Time', coerce=int)

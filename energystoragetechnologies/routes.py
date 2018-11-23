@@ -1,8 +1,8 @@
-from flask import render_template, url_for, redirect
+from flask import render_template
 from energystoragetechnologies import app
 from energystoragetechnologies.forms import SelectTechnologyForm, CompareTechnologiesForm
 from energystoragetechnologies.models import Technology, Parameter, Source
-from energystoragetechnologies.charts import drawfigure, drawdensityfigure, drawcapitalcostfigure
+from energystoragetechnologies.charts import drawfigure, drawdensityfigure, drawcapitalcostfigure, drawappplicationsfigure
 
 
 # home route, shows home.html view
@@ -46,7 +46,6 @@ def buildvaluedict(list, techname):
         }
     return outputdict
 
-
 # Technology information route, shows technologyinformation.html view
 @app.route("/technologyinformation", methods=['GET', 'POST'])
 def technologyinformation():
@@ -70,6 +69,13 @@ def technologyinformation():
     }
     form.discharge_time_Field.choices = discharge_time_converter.items()
     form.response_time_Field.choices = response_time_converter.items()
+    applicationlist = ["any","frequency containment reserve (primary control)",
+       "frequency restoration reserve (secondary control)", "replacement reserve (tertiary control)", "black start",
+       "black start", "energy arbitrage", "grid investment deferral", "increase of self-consumption",
+       "island operation", "load levelling", "mobility", "off-grid applications", "peak shaving",
+       "portable electronic applications", "power reliability", "renewable energy integration",
+       "uninterrupted power supply", "voltage support"]
+    form.applications_Field.choices = [(application, application) for application in applicationlist]
     stringfieldlist = ["energy_capacity", "power_capacity", "efficiency", "gravimetric_power_density",
                        "volumetric_power_density", "gravimetric_energy_density", "volumetric_energy_density",
                        "calendar_lifetime", "cycle_lifetime",
@@ -84,6 +90,7 @@ def technologyinformation():
     techdiagram_description=Technology.query.filter_by(name=techname).first().diagram_description
     techdiagram_source=f" ({Source.query.filter_by(id=Technology.query.filter_by(name=techname).first().diagram_source_id).first().author}, {Source.query.filter_by(id=Technology.query.filter_by(name=techname).first().diagram_source_id).first().releaseyear})."
     techdiagram_link=Source.query.filter_by(id=Technology.query.filter_by(name=techname).first().diagram_source_id).first().link
+    applications=Technology.query.filter_by(name=techname).first().applications
     techparlist = ["energy_capacity", "power_capacity", "efficiency", "discharge_time", "response_time",
                    "gravimetric_power_density", "volumetric_power_density", "gravimetric_energy_density",
                    "volumetric_energy_density", "calendar_lifetime", "cycle_lifetime",]
@@ -100,8 +107,8 @@ def technologyinformation():
     # what happens if user presses apply or filter
     if form.validate_on_submit():
         # remove choices that are filtered out
-        for par in stringfieldlist:
-            for t in Technology.query.order_by('id'):
+        for t in Technology.query.order_by('id'):
+            for par in stringfieldlist:
                 if t in techchoices:
                     if getattr(getattr(form, par + "_Field"), "data") != "":
                         if Parameter.query.filter_by(technology_name=t.name).filter_by(name=par+"_min").first().value is None:
@@ -112,8 +119,7 @@ def technologyinformation():
                                     float(getattr(getattr(form, par + "_Field"), "data")) >
                                     Parameter.query.filter_by(technology_name=t.name).filter_by(name=par+"_max").first().value):
                                 techchoices.remove(t)
-        for par in selectfieldlist:
-            for t in Technology.query.order_by('id'):
+            for par in selectfieldlist:
                 if t in techchoices:
                     if getattr(getattr(form, par + "_Field"), "data") != 0:
                         if Parameter.query.filter_by(technology_name=t.name).filter_by(name=par+"_min").first().value is None:
@@ -124,6 +130,10 @@ def technologyinformation():
                                     getattr(getattr(form, par + "_Field"), "data") >
                                     Parameter.query.filter_by(technology_name=t.name).filter_by(name=par+"_max").first().value):
                                 techchoices.remove(t)
+            if form.applications_Field.data != "any":
+                if t in techchoices:
+                    if form.applications_Field.data not in t.applications:
+                        techchoices.remove(t)
         if len(techchoices)==0:
             nochoicealert=True
             choicelist = [[t.id, t.name if t.level == 1 else ". . . " + t.name if t.level == 2 else ". . . . . . " + t.name]
@@ -142,6 +152,7 @@ def technologyinformation():
         techdiagram_description = Technology.query.filter_by(name=techname).first().diagram_description
         techdiagram_source = f" ({Source.query.filter_by(id=Technology.query.filter_by(name=techname).first().diagram_source_id).first().author}, {Source.query.filter_by(id=Technology.query.filter_by(name=techname).first().diagram_source_id).first().releaseyear})."
         techdiagram_link = Source.query.filter_by(id=Technology.query.filter_by(name=techname).first().diagram_source_id).first().link
+        applications = Technology.query.filter_by(name=techname).first().applications
         techparlist = ["energy_capacity", "power_capacity", "efficiency", "discharge_time", "response_time",
                        "gravimetric_power_density", "volumetric_power_density", "gravimetric_energy_density",
                        "volumetric_energy_density", "calendar_lifetime", "cycle_lifetime", ]
@@ -166,6 +177,7 @@ def technologyinformation():
                            techdiagram_description=techdiagram_description,
                            techdiagram_source=techdiagram_source,
                            techdiagram_link=techdiagram_link,
+                           applications=applications,
                            nochoicealert=nochoicealert)
 
 
@@ -236,6 +248,13 @@ def technologycomparison():
     }
     form.discharge_time_Field.choices = discharge_time_converter.items()
     form.response_time_Field.choices = response_time_converter.items()
+    applicationlist = ["any","frequency containment reserve (primary control)",
+       "frequency restoration reserve (secondary control)", "replacement reserve (tertiary control)", "black start",
+       "energy arbitrage", "grid investment deferral", "increase of self-consumption",
+       "island operation", "load levelling", "mobility", "off-grid applications", "peak shaving",
+       "portable electronic applications", "power reliability", "renewable energy integration",
+       "uninterrupted power supply", "voltage support"]
+    form.applications_Field.choices = [(application, application) for application in applicationlist]
     stringfieldlist = ["energy_capacity", "power_capacity", "efficiency", "gravimetric_power_density",
                        "volumetric_power_density", "gravimetric_energy_density", "volumetric_energy_density",
                        "capital_cost_energyspecific", "capital_cost_powerspecific", "LCOES"]
@@ -253,6 +272,7 @@ def technologycomparison():
     # order the lit
     orderedchoiceslist = orderlist(choicelist)
     # draw charts
+    applications_fig = drawappplicationsfigure(techlist, applicationlist)
     energy_capacity_fig = drawfigure(techlist, "energy_capacity")
     power_capacity_fig = drawfigure(techlist, "power_capacity")
     discharge_time_fig = drawfigure(techlist, "discharge_time")
@@ -264,11 +284,12 @@ def technologycomparison():
     cycle_lifetime_fig = drawfigure(techlist, "cycle_lifetime")
     capital_cost_fig = drawcapitalcostfigure(techlist)
     lcoes_fig = drawfigure(techlist, "LCOES")
+    greenhousegas_fig = drawfigure(techlist, "life_cycle_greenhouse_gas_emissions")
     # what happens if user klicks on compare or filter
     if form.validate_on_submit():
         # remove choices that are filtered out
-        for par in stringfieldlist:
-            for t in Technology.query.order_by('id'):
+        for t in Technology.query.order_by('id'):
+            for par in stringfieldlist:
                 if t in techchoices:
                     if getattr(getattr(form, par + "_Field"), "data") != "":
                         if Parameter.query.filter_by(technology_name=t.name).filter_by(name=par+"_min").first().value is None:
@@ -279,8 +300,7 @@ def technologycomparison():
                                     float(getattr(getattr(form, par + "_Field"), "data")) >
                                     Parameter.query.filter_by(technology_name=t.name).filter_by(name=par+"_max").first().value):
                                 techchoices.remove(t)
-        for par in selectfieldlist:
-            for t in Technology.query.order_by('id'):
+            for par in selectfieldlist:
                 if t in techchoices:
                     if getattr(getattr(form, par + "_Field"), "data") != 0:
                         if Parameter.query.filter_by(technology_name=t.name).filter_by(name=par+"_min").first().value is None:
@@ -291,6 +311,10 @@ def technologycomparison():
                                     getattr(getattr(form, par + "_Field"), "data") >
                                     Parameter.query.filter_by(technology_name=t.name).filter_by(name=par+"_max").first().value):
                                 techchoices.remove(t)
+            if form.applications_Field.data != "any":
+                if t in techchoices:
+                    if form.applications_Field.data not in t.applications:
+                        techchoices.remove(t)
         if not form.CompareTechnologiesField.data:
             notechalert=True
         # generate list of choices
@@ -322,6 +346,7 @@ def technologycomparison():
         if not notechalert:
             if not nochoicealert:
                 # draw charts
+                applications_fig = drawappplicationsfigure(techlist, applicationlist)
                 energy_capacity_fig = drawfigure(techlist, "energy_capacity")
                 power_capacity_fig = drawfigure(techlist, "power_capacity")
                 discharge_time_fig = drawfigure(techlist, "discharge_time")
@@ -333,9 +358,12 @@ def technologycomparison():
                 cycle_lifetime_fig = drawfigure(techlist, "cycle_lifetime")
                 capital_cost_fig = drawcapitalcostfigure(techlist)
                 lcoes_fig = drawfigure(techlist, "LCOES")
+                greenhousegas_fig = drawfigure(techlist, "life_cycle_greenhouse_gas_emissions")
+
     return render_template('technologycomparison.html',
                            title='Technology Comparison',
                            form=form,
+                           applications_fig=applications_fig,
                            energy_capacity_fig=energy_capacity_fig,
                            power_capacity_fig=power_capacity_fig,
                            discharge_time_fig=discharge_time_fig,
@@ -346,7 +374,10 @@ def technologycomparison():
                            calendar_lifetime_fig=calendar_lifetime_fig,
                            cycle_lifetime_fig=cycle_lifetime_fig,
                            capital_cost_fig=capital_cost_fig,
+                           greenhousegas_fig=greenhousegas_fig,
                            lcoes_fig=lcoes_fig,
                            orderedchoiceslist=orderedchoiceslist,
                            notechalert=notechalert,
-                           nochoicealert=nochoicealert)
+                           nochoicealert=nochoicealert,
+                           techlist=techlist,
+                           applicationlist=applicationlist)

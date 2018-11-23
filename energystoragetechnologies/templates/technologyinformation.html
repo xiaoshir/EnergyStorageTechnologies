@@ -51,12 +51,28 @@
 <br>
 
 <div class="container">
+    {% autoescape false %}
     {{ techdescription }}
+    {% endautoescape %}
 
     <div id="techdiagram">
         <img src=" ../static/images/{{ techdiagram }}" height="300">
         <br>
-        {{ techdiagram_description }} <a href={{ techdiagram_link }} target="_blank"> {{ techdiagram_source }} </a>
+        {{ techdiagram_description }}
+        <a href={{ techdiagram_link }} target="_blank"> {{ techdiagram_source }} </a>
+    </div>
+</div>
+
+<br>
+
+<div class="container">
+   <div class="row">
+        <div class="col-2">
+            <strong> applications: </strong>
+        </div>
+        <div class="col-10">
+            {{ applications }}
+        </div>
     </div>
 </div>
 
@@ -116,7 +132,7 @@
         <div id="collapseTwo" class="collapse" aria-labelledby="headingTwo" data-parent="#accordionExample">
           <div class="card-body">
             <table class="table">
-              <thead class="thead-light">
+              <thead class="thead">
                 <tr>
                   <th scope="col">parameter</th>
                   <th scope="col">value</th>
@@ -154,7 +170,7 @@
         <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
           <div class="card-body">
               <table class="table">
-                  <thead class="thead-light">
+                  <thead class="thead">
                     <tr>
                       <th scope="col">parameter</th>
                       <th scope="col">value</th>

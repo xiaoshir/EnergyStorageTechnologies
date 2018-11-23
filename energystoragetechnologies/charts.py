@@ -9,19 +9,48 @@ def drawfigure(techlist, par):
     config = Config()
     config.show_legend = False
     config.xrange = (0, len(techlist)+1)
-    if len(techlist) > 5:
-        config.truncate_label = 10
-    elif len(techlist) > 3:
-        config.truncate_label = 15
-    else:
-        config.truncate_label = 20
-    config.human_readable = True
+    #labels, dots and stroke depending on number of technologies compared
     config.dots_size = 7
-    unit =Parameter.query.filter_by(name=par+'_min').first().unit
-    config.y_title = par.replace('_', ' ') + unit
-    #config.show_dots = False
     config.stroke_style = {'width': 50}
-    config.style = pygal.style.styles['default'](label_font_size=12, stroke_opacity=1,
+    labelsize = 12
+    if len(techlist) > 3:
+        config.truncate_label = 20
+        config.x_label_rotation = 20
+        config.dots_size = 6
+        config.stroke_style = {'width': 40}
+    if len(techlist) > 5:
+        config.dots_size = 5
+        config.stroke_style = {'width': 30}
+    if len(techlist) > 10:
+        config.stroke_style = {'width': 27}
+    if len(techlist) > 13:
+        config.dots_size = 4
+        config.stroke_style = {'width': 25}
+    if len(techlist) > 15:
+        config.dots_size = 4
+        config.stroke_style = {'width': 22}
+        labelsize=11
+    if len(techlist) > 17:
+        config.dots_size = 3
+        config.stroke_style = {'width': 20}
+    if len(techlist) > 20:
+        labelsize=10
+        config.stroke_style = {'width': 18}
+    if len(techlist) > 23:
+        labelsize=9
+        config.stroke_style = {'width': 15}
+    if len(techlist) > 27:
+        labelsize=8
+        config.stroke_style = {'width': 14}
+    if len(techlist) > 31:
+        labelsize = 7
+        config.stroke_style = {'width': 12}
+
+    config.human_readable = True
+    unit =Parameter.query.filter_by(name=par+'_min').first().unit
+    config.y_title = par.replace('_', ' ') + ' [' + unit + ']'
+    #config.show_dots = False
+    config.style = pygal.style.styles['default'](stroke_opacity=1, label_font_size=labelsize,
                                                 stroke_opacity_hover=1, transition='100000000000s ease-in')
     if par == 'efficiency':
         config.range = (0, 100)
@@ -98,6 +127,87 @@ def drawfigure(techlist, par):
     xy_chart.render()
     return xy_chart.render_data_uri()
 
+def drawappplicationsfigure(techlist, applicationslist):
+    config = Config()
+    config.show_legend = False
+    config.xrange = (0, len(techlist)+1)
+    #labels, dots depending on number of technologies compared
+    config.dots_size = 7
+    labelsize = 10
+    if len(techlist) > 3:
+        config.truncate_label = 20
+        config.x_label_rotation = 20
+        config.dots_size = 6
+    if len(techlist) > 5:
+        config.dots_size = 6
+    if len(techlist) > 13:
+        config.dots_size = 5
+    if len(techlist) > 17:
+        config.dots_size = 4
+        labelsize = 9
+    if len(techlist) > 23:
+        labelsize = 8
+    if len(techlist) > 28:
+        labelsize = 7
+
+    config.human_readable = True
+
+    #config.show_dots = False
+    config.style = pygal.style.styles['default'](label_font_size=labelsize)
+    xy_chart = pygal.XY(config)
+    dictlist = []
+    applicationsconverter={
+        'frequency containment reserve (primary control)': 1,
+        'frequency restoration reserve (secondary control)': 2,
+        'replacement reserve (tertiary control)': 3,
+        'black start': 4,
+        'energy arbitrage': 5,
+        'grid investment deferral': 6,
+        'increase of self-consumption': 7,
+        'island operation': 8,
+        'load levelling': 9,
+        'mobility': 10,
+        'off-grid applications': 11,
+        'peak shaving': 12,
+        'portable electronic applications': 13,
+        'power reliability': 14,
+        'renewable energy integration': 15,
+        'uninterrupted power supply': 16,
+        'voltage support': 17}
+    xy_chart.y_labels = [
+        {'label': 'frequency containment reserve', 'value': 1},
+        {'label': 'frequency restoration reserve', 'value': 2},
+        {'label': 'replacement reserve', 'value': 3},
+        {'label': 'black start', 'value': 4},
+        {'label': 'energy arbitrage', 'value': 5},
+        {'label': 'grid investment deferral', 'value': 6},
+        {'label': 'increase of self-consumption', 'value': 7},
+        {'label': 'island operation', 'value': 8},
+        {'label': 'load levelling', 'value': 9},
+        {'label': 'mobility', 'value': 10},
+        {'label': 'off-grid applications', 'value': 11},
+        {'label': 'peak shaving', 'value': 12},
+        {'label': 'portable electronic applications', 'value': 13},
+        {'label': 'power reliability', 'value': 14},
+        {'label': 'renewable energy integration', 'value': 15},
+        {'label': 'uninterrupted power supply', 'value': 16},
+        {'label': 'voltage support', 'value': 17}]
+    i = 1
+    for tech in techlist:
+        for application in applicationslist:
+            if application in tech.applications:
+                xy_chart.add(f"{tech.name}", [
+                    {'value': (i, applicationsconverter[application]),
+                     'label': "",
+                     'color':'DodgerBlue'}])
+        dictlist.append({
+            'label': f"{tech.name}",
+            'value': i})
+        i=i+1
+    xy_chart.x_labels = (dictlist)
+    xy_chart.x_value_formatter = lambda x: ""
+    xy_chart.render()
+    return xy_chart.render_data_uri()
 
 def drawdensityfigure(techlist, par):
     config = Config()

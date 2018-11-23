@@ -9,6 +9,7 @@ class Technology(db.Model):
     diagram = db.Column(db.String(1000))
     diagram_description = db.Column(db.String(10000))
     diagram_source_id = db.Column(db.Integer, db.ForeignKey('source.id'), nullable=False)
+    applications = db.Column(db.String(10000))
 
     def __repr__(self):
         return self.name
