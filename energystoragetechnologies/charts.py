@@ -167,7 +167,7 @@ def drawappplicationsfigure(techlist, applicationslist):
         'island operation': 8,
         'load levelling': 9,
         'mobility': 10,
-        'off-grid applications': 11,
+        'off grid applications': 11,
         'peak shaving': 12,
         'portable electronic applications': 13,
         'power reliability': 14,

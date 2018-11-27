@@ -72,7 +72,7 @@ def technologyinformation():
     applicationlist = ["any","frequency containment reserve (primary control)",
        "frequency restoration reserve (secondary control)", "replacement reserve (tertiary control)", "black start",
        "black start", "energy arbitrage", "grid investment deferral", "increase of self-consumption",
-       "island operation", "load levelling", "mobility", "off-grid applications", "peak shaving",
+       "island operation", "load levelling", "mobility", "off grid applications", "peak shaving",
        "portable electronic applications", "power reliability", "renewable energy integration",
        "uninterrupted power supply", "voltage support"]
     form.applications_Field.choices = [(application, application) for application in applicationlist]
@@ -251,7 +251,7 @@ def technologycomparison():
     applicationlist = ["any","frequency containment reserve (primary control)",
        "frequency restoration reserve (secondary control)", "replacement reserve (tertiary control)", "black start",
        "energy arbitrage", "grid investment deferral", "increase of self-consumption",
-       "island operation", "load levelling", "mobility", "off-grid applications", "peak shaving",
+       "island operation", "load levelling", "mobility", "off grid applications", "peak shaving",
        "portable electronic applications", "power reliability", "renewable energy integration",
        "uninterrupted power supply", "voltage support"]
     form.applications_Field.choices = [(application, application) for application in applicationlist]

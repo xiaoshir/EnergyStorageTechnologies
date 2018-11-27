@@ -58,7 +58,9 @@
     <div id="techdiagram">
         <img src=" ../static/images/{{ techdiagram }}" height="300">
         <br>
+        {% autoescape false %}
         {{ techdiagram_description }}
+        {% endautoescape %}
         <a href={{ techdiagram_link }} target="_blank"> {{ techdiagram_source }} </a>
     </div>
 </div>
