@@ -82,7 +82,7 @@ def technologyinformation():
                        "capital_cost_energyspecific", "capital_cost_powerspecific", "LCOES"]
     selectfieldlist = ["discharge_time", "response_time"]
     # defaults
-    nochoicealert=False
+    nochoicealert = False
     techchoices = [t for t in Technology.query.order_by('id')]
     techname = techchoices[0].name
     techdescription = Technology.query.filter_by(name=techname).first().description
