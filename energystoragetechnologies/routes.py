@@ -1,8 +1,10 @@
-from flask import render_template
+from flask import render_template, send_from_directory, current_app
+from pathlib import Path
 from energystoragetechnologies import app
 from energystoragetechnologies.forms import SelectTechnologyForm, CompareTechnologiesForm
 from energystoragetechnologies.models import Technology, Parameter, Source
-from energystoragetechnologies.charts import drawfigure, drawdensityfigure, drawcapitalcostfigure, drawappplicationsfigure
+from energystoragetechnologies.charts import drawfigure, drawdensityfigure, drawcapitalcostfigure, drawappplicationsfigure, drawcapitalcostcomponentsfigure
+import os.path
 
 
 # home route, shows home.html view
@@ -85,6 +87,11 @@ def technologyinformation():
     nochoicealert = False
     techchoices = [t for t in Technology.query.order_by('id')]
     techname = techchoices[0].name
+    lcoes_tool_link = "../uploads/LCOES_tool.xlsx"
+    inventory_data_exists=False
+    inventory_data_link = f"../uploads/inventory_data_{techname.replace(' ', '_')}.xlsx"
+    if os.path.isfile(os.path.join(current_app.root_path, f"static/uploads/inventory_data_{techname.replace(' ', '_')}.xlsx")):
+        inventory_data_exists = True
     techdescription = Technology.query.filter_by(name=techname).first().description
     techdiagram=Technology.query.filter_by(name=techname).first().diagram
     techdiagram_description=Technology.query.filter_by(name=techname).first().diagram_description
@@ -96,9 +103,9 @@ def technologyinformation():
                    "volumetric_energy_density", "calendar_lifetime", "cycle_lifetime",]
 
     techvalues=buildvaluedict(techparlist, techname)
-    economicparlist = ["capital_cost_energyspecific", "capital_cost_powerspecific", "LCOES"]
+    economicparlist = ["capital_cost_energyspecific", "capital_cost_powerspecific", "capital_cost_of_energy_based_components", "capital_cost_of_power_based_components"]
     economicvalues = buildvaluedict(economicparlist, techname)
-    environmentalparlist = ["life_cycle_greenhouse_gas_emissions"]
+    environmentalparlist = []
     environmentalvalues = buildvaluedict(environmentalparlist, techname)
     #trying to get indendations in the drop down
     choicelist=[[t.id, t.name if t.level==1 else ". . . "+t.name if t.level==2 else ". . . . . . "+t.name] for t in techchoices]
@@ -158,10 +165,14 @@ def technologyinformation():
                        "volumetric_energy_density", "calendar_lifetime", "cycle_lifetime", ]
 
         techvalues = buildvaluedict(techparlist, techname)
-        economicparlist = ["capital_cost_energyspecific", "capital_cost_powerspecific", "LCOES"]
+        economicparlist = ["capital_cost_energyspecific", "capital_cost_powerspecific", "capital_cost_of_energy_based_components", "capital_cost_of_power_based_components"]
         economicvalues = buildvaluedict(economicparlist, techname)
-        environmentalparlist = ["life_cycle_greenhouse_gas_emissions"]
+        environmentalparlist = []
         environmentalvalues = buildvaluedict(environmentalparlist, techname)
+        inventory_data_link = f"/uploads/inventory_data_{techname.replace(' ', '_')}.xlsx"
+        if os.path.isfile(os.path.join(current_app.root_path,
+                                       f"static/uploads/inventory_data_{techname.replace(' ', '_')}.xlsx")):
+            inventory_data_exists = True
     # render HTML
     return render_template('technologyinformation.html',
                            title='Technology Information',
@@ -178,51 +189,107 @@ def technologyinformation():
                            techdiagram_source=techdiagram_source,
                            techdiagram_link=techdiagram_link,
                            applications=applications,
-                           nochoicealert=nochoicealert)
+                           nochoicealert=nochoicealert,
+                           inventory_data_link=inventory_data_link,
+                           inventory_data_exists=inventory_data_exists)
 
 
 # function that orders the choiceslist such that specific technologies are placed below their generic "parent" technology
-def orderlist(choicelist):
+def orderchoices(techchoices):
     caeslist = []
     pheslist = []
+    batterieslist = []
     otherslist = []
-    for choice in choicelist:
-        if "CAES" in str(choice.label):
-            caeslist.append(choice)
-        elif "PHES" in str(choice.label):
-            pheslist.append(choice)
+    levellist = []
+    emptypositions=[]
+    for tech in techchoices:
+        if "CAES" in tech.name:
+            caeslist.append(tech)
+        elif "PHES" in tech.name:
+            pheslist.append(tech)
+        elif "Battery" in tech.name or "Batteries" in tech.name:
+            batterieslist.append(tech)
         else:
-            otherslist.append(choice)
-    if len(caeslist) > len(pheslist):
-        largerlist = caeslist
-        smallerlist = pheslist
-    else:
-        largerlist = pheslist
-        smallerlist = caeslist
-    largercount = 0
-    smallercount = 0
+            otherslist.append(tech)
+    batteriescount=0
+    caescount=0
+    phescount=0
     otherscount = 0
-    orderedchoiceslist = []
+    orderedchoices = []
     i = 0
-    while largercount < len(largerlist) or smallercount < len(smallerlist) or otherscount < len(otherslist):
-        if i % 2 == 0:
-            if largercount < len(largerlist):
-                orderedchoiceslist.append(largerlist[largercount])
-                largercount = largercount + 1
+    while batteriescount < len(batterieslist) or caescount < len(caeslist) or phescount < len(pheslist) or \
+            otherscount < len(otherslist):
+        if len(batterieslist)>0:
+            if i % 2 == 0:
+                if batteriescount < len(batterieslist):
+                    orderedchoices.append(batterieslist[batteriescount])
+                    levellist.append(batterieslist[batteriescount].level)
+                    batteriescount = batteriescount + 1
+                else:
+                    orderedchoices.append(otherslist[otherscount])
+                    levellist.append(otherslist[otherscount].level)
+                    otherscount = otherscount + 1
             else:
-                orderedchoiceslist.append(otherslist[otherscount])
-                otherscount = otherscount + 1
+                if phescount < len(pheslist):
+                    orderedchoices.append(pheslist[phescount])
+                    levellist.append(pheslist[phescount].level)
+                    phescount = phescount + 1
+                elif caescount < len(caeslist):
+                    orderedchoices.append(caeslist[caescount])
+                    levellist.append(caeslist[caescount].level)
+                    caescount = caescount + 1
+                elif otherscount < len(otherslist):
+                    orderedchoices.append(otherslist[otherscount])
+                    levellist.append(otherslist[otherscount].level)
+                    otherscount = otherscount + 1
+                else:
+                    levellist.append(0)
+                    emptypositions.append(i)
+            i = i + 1
+        elif len(caeslist)>0:
+            if i % 2 == 0:
+                if caescount < len(caeslist):
+                    orderedchoices.append(caeslist[caescount])
+                    levellist.append(caeslist[caescount].level)
+                    caescount = caescount + 1
+                else:
+                    orderedchoices.append(otherslist[otherscount])
+                    levellist.append(otherslist[otherscount].level)
+                    otherscount = otherscount + 1
+            else:
+                if phescount < len(pheslist):
+                    orderedchoices.append(pheslist[phescount])
+                    levellist.append(pheslist[phescount].level)
+                    phescount = phescount + 1
+                elif otherscount < len(otherslist):
+                    orderedchoices.append(otherslist[otherscount])
+                    levellist.append(otherslist[otherscount].level)
+                    otherscount = otherscount + 1
+                else:
+                    levellist.append(0)
+                    emptypositions.append(i)
+            i = i + 1
         else:
-            if smallercount < len(smallerlist):
-                orderedchoiceslist.append(smallerlist[smallercount])
-                smallercount = smallercount + 1
-            elif otherscount < len(otherslist):
-                orderedchoiceslist.append(otherslist[otherscount])
-                otherscount = otherscount + 1
+            if i % 2 == 0:
+                if phescount < len(pheslist):
+                    orderedchoices.append(pheslist[phescount])
+                    levellist.append(pheslist[phescount].id)
+                    phescount = phescount + 1
+                else:
+                    orderedchoices.append(otherslist[otherscount])
+                    levellist.append(otherslist[otherscount].id)
+                    otherscount = otherscount + 1
             else:
-                orderedchoiceslist.append("empty")
-        i = i + 1
-    return orderedchoiceslist
+                if otherscount < len(otherslist):
+                    orderedchoices.append(otherslist[otherscount])
+                    levellist.append(otherslist[otherscount].id)
+                    otherscount = otherscount + 1
+                else:
+                    levellist.append(0)
+                    emptypositions.append(i)
+
+            i = i + 1
+    return {'orderedchoices': orderedchoices, 'levellist': levellist, 'emptypositions': emptypositions}
 
 
 # Technology comparison route, shows technologycomparison.html view
@@ -260,17 +327,28 @@ def technologycomparison():
                        "capital_cost_energyspecific", "capital_cost_powerspecific", "LCOES"]
     selectfieldlist = ["discharge_time", "response_time"]
     # defaults
+    orderedidlist=[]
     notechalert=False
     nochoicealert=False
-    techchoices = [t for t in Technology.query.order_by('id')]
     #form.CompareTechnologiesField.data = [12, 19]
-    techlist = [Technology.query.filter_by(name="Pumped Hydro Energy Storage (PHES)").first(),
-                Technology.query.filter_by(name="Compressed Air Energy Storage (CAES)").first()]
+    techlist = [Technology.query.filter_by(name="Batteries").first(),
+                Technology.query.filter_by(name="Pumped Hydro Energy Storage (PHES)").first()]
+    # order choices
+    techchoices = [t for t in Technology.query.order_by('id')]
+    orderedchoices=orderchoices(techchoices)['orderedchoices']
     # generate list of choices
-    form.CompareTechnologiesField.choices = [(t.id, t.name) for t in techchoices]
-    choicelist = list(form.CompareTechnologiesField)
-    # order the lit
-    orderedchoiceslist = orderlist(choicelist)
+    form.CompareTechnologiesField.choices=[(t.id, t.name) for t in orderedchoices]
+    orderedchoiceslistwithoutempty = list(form.CompareTechnologiesField)
+    emptypositions = orderchoices(techchoices)['emptypositions']
+    orderedchoiceslist=[]
+    k=0
+    for i in range(len(orderedchoices)+len(emptypositions)):
+        if i in emptypositions:
+            orderedchoiceslist.append('empty')
+        else:
+            orderedchoiceslist.append(orderedchoiceslistwithoutempty[k])
+            k=k+1
+    levellist = orderchoices(techchoices)['levellist']
     # draw charts
     applications_fig = drawappplicationsfigure(techlist, applicationlist)
     energy_capacity_fig = drawfigure(techlist, "energy_capacity")
@@ -283,6 +361,7 @@ def technologycomparison():
     calendar_lifetime_fig = drawfigure(techlist, "calendar_lifetime")
     cycle_lifetime_fig = drawfigure(techlist, "cycle_lifetime")
     capital_cost_fig = drawcapitalcostfigure(techlist)
+    capital_cost_components_fig = drawcapitalcostcomponentsfigure(techlist)
     lcoes_fig = drawfigure(techlist, "LCOES")
     greenhousegas_fig = drawfigure(techlist, "life_cycle_greenhouse_gas_emissions")
     # what happens if user klicks on compare or filter
@@ -318,7 +397,19 @@ def technologycomparison():
         if not form.CompareTechnologiesField.data:
             notechalert=True
         # generate list of choices
-        form.CompareTechnologiesField.choices = [(t.id, t.name) for t in techchoices]
+        orderedchoices = orderchoices(techchoices)['orderedchoices']
+        form.CompareTechnologiesField.choices = [(t.id, t.name) for t in orderedchoices]
+        orderedchoiceslistwithoutempty = list(form.CompareTechnologiesField)
+        emptypositions = orderchoices(techchoices)['emptypositions']
+        orderedchoiceslist = []
+        k = 0
+        for i in range(len(orderedchoices) + len(emptypositions)):
+            if i in emptypositions:
+                orderedchoiceslist.append('empty')
+            else:
+                orderedchoiceslist.append(orderedchoiceslistwithoutempty[k])
+                k = k + 1
+        levellist = orderchoices(techchoices)['levellist']
         if form.submitfilter.data:
             #set default choice(s)
             form.CompareTechnologiesField.data = []
@@ -332,12 +423,7 @@ def technologycomparison():
                     nochoicealert=True
                 else:
                     form.CompareTechnologiesField.data.append(techchoices[0].id)
-
             notechalert=False
-        #convert choices to list
-        choicelist = list(form.CompareTechnologiesField)
-        # order the list
-        orderedchoiceslist = orderlist(choicelist)
         # build list of technologies that will be compared
         idlist = form.CompareTechnologiesField.data
         techlist = []
@@ -357,6 +443,7 @@ def technologycomparison():
                 calendar_lifetime_fig = drawfigure(techlist, "calendar_lifetime")
                 cycle_lifetime_fig = drawfigure(techlist, "cycle_lifetime")
                 capital_cost_fig = drawcapitalcostfigure(techlist)
+                capital_cost_components_fig=drawcapitalcostcomponentsfigure(techlist)
                 lcoes_fig = drawfigure(techlist, "LCOES")
                 greenhousegas_fig = drawfigure(techlist, "life_cycle_greenhouse_gas_emissions")
 
@@ -374,10 +461,19 @@ def technologycomparison():
                            calendar_lifetime_fig=calendar_lifetime_fig,
                            cycle_lifetime_fig=cycle_lifetime_fig,
                            capital_cost_fig=capital_cost_fig,
+                           capital_cost_components_fig=capital_cost_components_fig,
                            greenhousegas_fig=greenhousegas_fig,
                            lcoes_fig=lcoes_fig,
                            orderedchoiceslist=orderedchoiceslist,
                            notechalert=notechalert,
                            nochoicealert=nochoicealert,
                            techlist=techlist,
-                           applicationlist=applicationlist)
+                           applicationlist=applicationlist,
+                           levellist=levellist)
+
+
+#route used for download of excel sheets
+@app.route('/uploads/<path:filename>')
+def download_file(filename):
+    uploads = os.path.join(current_app.root_path, app.config['UPLOAD_FOLDER'])
+    return send_from_directory(directory=uploads, filename=filename, as_attachment=True)

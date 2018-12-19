@@ -109,16 +109,35 @@
                   {% for par in techvalues %}
                   <tr>
                       <th scope="row">{{ techvalues[par].name }}</th>
-                        <td><a href={{ techvalues[par].minsource.link }} target="_blank" class="tablelink">
-                            {{ techvalues[par].min }}</a>
-                            - <a href={{ techvalues[par].maxsource.link }} target="_blank" class="tablelink">
-                                {{ techvalues[par].max }} </a>
-                        </td>
+                      {% if techvalues[par].name == "discharge time" %}
+                      <td><a href={{ techvalues[par].minsource.link }} target="_blank" class="tablelink">
+                          {{ discharge_time_converter[techvalues[par].min] }}</a>
+                          - <a href={{ techvalues[par].maxsource.link }} target="_blank" class="tablelink">
+                              {{ discharge_time_converter[techvalues[par].max] }} </a>
+                      </td>
+                      {% elif techvalues[par].name == "response time" %}
+                      <td><a href={{ techvalues[par].minsource.link }} target="_blank" class="tablelink">
+                          {{ response_time_converter[techvalues[par].min] }}</a>
+                          - <a href={{ techvalues[par].maxsource.link }} target="_blank" class="tablelink">
+                              {{ response_time_converter[techvalues[par].max] }} </a>
+                      </td>
+                      {% else %}
+                      <td><a href={{ techvalues[par].minsource.link }} target="_blank" class="tablelink">
+                        {{ techvalues[par].min }}</a>
+                        - <a href={{ techvalues[par].maxsource.link }} target="_blank" class="tablelink">
+                            {{ techvalues[par].max }} </a>
+                      </td>
+                      {% endif %}
                       <td>{{ techvalues[par].unit }}</td>
                   </tr>
                   {% endfor %}
                   </tbody>
                 </table>
+                {% if techvalues["cycle_lifetime"].max>99999 %}
+                note: cycle lifetimes above 100'000 cycles have been interpreted as almost infinite lifetime. Therefore,
+                the maximum cycle lifetime in this tool is 100'000 cycles, even though some papers use even longer cycle
+                lifetimes.
+                {% endif %}
             </div>
           </div>
         </div>
@@ -155,9 +174,9 @@
               {% endfor %}
               </tbody>
             </table>
-          *: <a href="https://www.researchgate.net/publication/260043756_The_Cost_of_Storage_-_How_to_Calculate_the_
-              Levelized_Cost_of_Stored_Energy_LCOE_and_Applications_to_Renewable_Energy_Generation">
-              Levelized Cost of Energy Storage</a>
+            <a href= "../uploads/LCOES_tool.xlsx"> LCOES calculation tool</a>
+
+
           </div>
         </div>
       </div>
@@ -165,34 +184,18 @@
         <div class="card-header accordionheader" id="headingThree">
           <h5 class="mb-0">
             <button class="btn btn-link collapsed accordion-title" type="button" data-toggle="collapse" data-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-              Environmental Parameters
+              Life cycle inventory data
             </button>
           </h5>
         </div>
         <div id="collapseThree" class="collapse" aria-labelledby="headingThree" data-parent="#accordionExample">
           <div class="card-body">
-              <table class="table">
-                  <thead class="thead">
-                    <tr>
-                      <th scope="col">parameter</th>
-                      <th scope="col">value</th>
-                      <th scope="col">unit</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                  {% for par in environmentalvalues %}
-                  <tr>
-                      <th scope="row">{{ environmentalvalues[par].name }}</th>
-                        <td><a href={{ environmentalvalues[par].minsource.link }} target="_blank" class="tablelink">
-                            {{ environmentalvalues[par].min }}</a>
-                            - <a href={{ environmentalvalues[par].maxsource.link }} target="_blank" class="tablelink">
-                                {{ environmentalvalues[par].max }} </a>
-                        </td>
-                      <td>{{ environmentalvalues[par].unit }}</td>
-                  </tr>
-                  {% endfor %}
-                  </tbody>
-                </table>
+              {% if inventory_data_exists %}
+              <a href= {{inventory_data_link}}> Inventory data excel spread sheet</a>
+              {% else %}
+              No inventory data available for this technology
+              {% endif %}
+
           </div>
         </div>
       </div>

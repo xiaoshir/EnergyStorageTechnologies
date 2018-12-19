@@ -41,7 +41,7 @@ class SelectTechnologyForm(FlaskForm):
 
 
 class CompareTechnologiesForm(FlaskForm):
-    CompareTechnologiesField = MultiCheckboxField('Select Technologies to compare:', coerce=int, default=[1, 8])
+    CompareTechnologiesField = MultiCheckboxField('Select Technologies to compare:', coerce=int, default=[1, 13])
     submit = SubmitField('compare')
     applications_Field = SelectField('Application')
     energy_capacity_Field = StringField('Energy Capacity', validators=[floatcheck])

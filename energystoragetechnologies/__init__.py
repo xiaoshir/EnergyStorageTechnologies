@@ -6,6 +6,8 @@ app.config['SECRET_KEY'] = 'bbc99195f28d3c411a22906570c55a77'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///../energystoragetechnologies.db'
 
 app.config['PROPAGATE_EXCEPTIONS'] = True
+
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
 app.config.from_object('config')
 
 db = SQLAlchemy(app)

@@ -2,6 +2,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <br>
+
 <div class="container">
     <div class="formdiv" id="comparisonform">
         <form class="form" method="POST" action="">
@@ -26,17 +27,10 @@
                                 {% if orderedchoiceslist[x] == "empty" %}
 
                                 {% else %}
-                                {% if "Conventional CAES" in orderedchoiceslist[x].label|string %}
+                                {% if levellist[x] == 2 %}
                                 &nbsp;&nbsp;&nbsp;&nbsp;
-                                {% elif "AA-CAES" in orderedchoiceslist[x].label|string %}
-                                &nbsp;&nbsp;&nbsp;&nbsp;
-                                {% elif "I-CAES" in orderedchoiceslist[x].label|string %}
-                                &nbsp;&nbsp;&nbsp;&nbsp;
-                                {% endif %}
-                                {% if "sized" in orderedchoiceslist[x].label|string %}
-                                &nbsp;&nbsp;&nbsp;&nbsp;
-                                {% elif "term" in orderedchoiceslist[x].label|string %}
-                                &nbsp;&nbsp;&nbsp;&nbsp;
+                                {% elif levellist[x] == 3 %}
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 {% endif %}
                                 {{ orderedchoiceslist[x] }}
                                 {{ orderedchoiceslist[x].label }}
@@ -225,6 +219,9 @@
             <div class="container-fluid" align="left">
                 <embed type = "image/svg+xml" src="{{ cycle_lifetime_fig|safe }}" style="max-width:1000px"/>
             </div>
+            note: cycle lifetimes above 100'000 cycles have been interpreted as almost infinite lifetime. Therefore,
+            the maximum cycle lifetime in this tool is 100'000 cycles, even though some papers use even longer cycle
+            lifetimes.
           </div>
         </div>
       </div>
@@ -232,7 +229,7 @@
         <div class="card-header accordionheader" id="headingEleven">
           <h5 class="mb-0">
             <button class="btn btn-link collapsed accordion-title" type="button" data-toggle="collapse" data-target="#collapseEleven" aria-expanded="false" aria-controls="collapseEleven">
-              Capital Cost
+              Energy/Power Specific Capital Cost
             </button>
           </h5>
         </div>
@@ -248,30 +245,14 @@
         <div class="card-header accordionheader" id="headingTwelve">
           <h5 class="mb-0">
             <button class="btn btn-link collapsed accordion-title" type="button" data-toggle="collapse" data-target="#collapseTwelve" aria-expanded="false" aria-controls="collapseTwelve">
-              Levelized Cost of Electricity Storage
+              Capital Cost of Energy/ Power Based Components
             </button>
           </h5>
         </div>
         <div id="collapseTwelve" class="collapse" aria-labelledby="headingTwelve" data-parent="#accordionExample">
           <div class="card-body">
             <div class="container-fluid" align="left">
-                <embed type = "image/svg+xml" src="{{ lcoes_fig|safe }}" style="max-width:1000px"/>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div class="card accordioncard">
-        <div class="card-header accordionheader" id="headingThirteen">
-          <h5 class="mb-0">
-            <button class="btn btn-link collapsed accordion-title" type="button" data-toggle="collapse" data-target="#collapseThirteen" aria-expanded="false" aria-controls="collapseThirteen">
-              Greenhouse Gas Emissions
-            </button>
-          </h5>
-        </div>
-        <div id="collapseThirteen" class="collapse" aria-labelledby="headingThirteen" data-parent="#accordionExample">
-          <div class="card-body">
-            <div class="container-fluid" align="left">
-                <embed type = "image/svg+xml" src="{{ greenhousegas_fig|safe }}" style="max-width:1000px"/>
+                <embed type = "image/svg+xml" src="{{ capital_cost_components_fig|safe }}" style="max-width:1000px"/>
             </div>
           </div>
         </div>

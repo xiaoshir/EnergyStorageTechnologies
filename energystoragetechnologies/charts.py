@@ -72,6 +72,7 @@ def drawfigure(techlist, par):
         {'label': 'milliseconds', 'value': 1},
         {'label': 'seconds', 'value': 2},
         {'label': 'minutes', 'value': 3}]
+
     dictlist = []
     ymin=100000000000
     ymax=0
@@ -83,7 +84,10 @@ def drawfigure(techlist, par):
     if (ymin*100) < ymax:
         xy_chart.logarithmic = True
         xy_chart.xrange = (0, 10**(len(techlist)+1))
-        xy_chart.range = (10 ** int(math.floor(math.log10(ymin))), 10 ** (int(math.floor(math.log10(ymax))) + 1) + 1)
+        if ymax<100000:
+            xy_chart.range = (10 ** int(math.floor(math.log10(ymin))), 10 ** (int(math.floor(math.log10(ymax))) + 1) + 1)
+        else:
+            xy_chart.range = (10 ** int(math.floor(math.log10(ymin))), 10 ** (int(math.floor(math.log10(ymax)))) + 1)
         logscale=True
     if logscale:
         i = 10
@@ -217,7 +221,7 @@ def drawdensityfigure(techlist, par):
     config.x_label_rotation=270
     config.legend_at_bottom=True
     if par == "gravimetric":
-        power_unit="[W*kg]"
+        power_unit="[W/kg]"
         energy_unit="[Wh/kg]"
     else:
         power_unit="[kW/m^3]"
@@ -232,8 +236,8 @@ def drawdensityfigure(techlist, par):
     config.style = pygal.style.styles['default'](label_font_size=12, stroke_opacity=0,
                                                 stroke_opacity_hover=0, transition='100000000000s ease-in')
     xy_chart = pygal.XY(config)
-    xmin=100
-    ymin=100
+    xmin=10000
+    ymin=10000
     xmax=0.001
     ymax=0.001
     for tech in techlist:
@@ -318,8 +322,8 @@ def drawcapitalcostfigure(techlist):
     config.dots_size = 3
     config.x_label_rotation=270
     config.legend_at_bottom=True
-    config.x_title = "power specific capital cost  [$/kW]"
-    config.y_title = "energy specific capital cost  [$/kWh]"
+    config.x_title = "power specific capital cost [$/kW]"
+    config.y_title = "energy specific capital cost [$/kWh]"
     #config.show_dots = False
     config.fill = True
     #config.show_minor_x_labels = False
@@ -327,10 +331,10 @@ def drawcapitalcostfigure(techlist):
     config.style = pygal.style.styles['default'](label_font_size=12, stroke_opacity=0,
                                                 stroke_opacity_hover=0, transition='100000000000s ease-in')
     xy_chart = pygal.XY(config)
-    xmin=100000000
-    ymin=100000000
-    xmax=1
-    ymax=1
+    xmin=10000
+    ymin=10000
+    xmax=0.001
+    ymax=0.001
     for tech in techlist:
         power_minstring = "capital_cost_powerspecific_min"
         power_maxstring = "capital_cost_powerspecific_max"
@@ -394,18 +398,13 @@ def drawcapitalcostfigure(techlist):
              'label': minenergylabel,
              'xlink': {'href': minenergylink, 'target': '_blank'}}])
 
-        xmin = min(Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_minstring).first().value
-                   if Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_minstring).first().value
-                      is not None else xmin, xmin)
-        xmax = min(Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_maxstring).first().value
-                   if Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_maxstring).first().value
-                      is not None else xmax, xmax)
-        ymin = min(Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_minstring).first().value
-                   if Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_minstring).first().value
-                      is not None else ymin, ymin)
-        ymax = min(Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_maxstring).first().value
-                   if Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_maxstring).first().value
-                      is not None else ymax, ymax)
+        if Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_minstring).first().value is not None:
+            xmin = min(xmin, Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_minstring).first().value)
+            xmax = max(xmax, Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_maxstring).first().value)
+        if Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_minstring).first().value is not None:
+            ymin = min(ymin, Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_minstring).first().value)
+            ymax = max(ymax, Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_maxstring).first().value)
+
 
         xup = 10**int(math.floor(math.log10(xmax)))
         yup = 10**int(math.floor(math.log10(ymax)))
@@ -414,7 +413,110 @@ def drawcapitalcostfigure(techlist):
         while yup < ymax:
             yup=yup+10**int(math.floor(math.log10(ymax)))
 
-        xy_chart.xrange = (10**int(math.floor(math.log10(xmin))), xup)
-        xy_chart.range = (10**int(math.floor(math.log10(ymin))), yup)
+    xy_chart.xrange = (10**int(math.floor(math.log10(xmin))), xup)
+    xy_chart.range = (10**int(math.floor(math.log10(ymin))), yup)
+    xy_chart.render()
+    return xy_chart.render_data_uri()
+
+def drawcapitalcostcomponentsfigure(techlist):
+    config = Config()
+    config.show_legend = True
+    config.human_readable = True
+    config.dots_size = 3
+    config.x_label_rotation=270
+    config.legend_at_bottom=True
+    config.x_title = "capital cost of power based components [$/kW]"
+    config.y_title = "capital cost of energy based components [$/kWh]"
+    #config.show_dots = False
+    config.fill = True
+    #config.show_minor_x_labels = False
+    config.stroke_style = {'width': 1}
+    config.style = pygal.style.styles['default'](label_font_size=12, stroke_opacity=0,
+                                                stroke_opacity_hover=0, transition='100000000000s ease-in')
+    xy_chart = pygal.XY(config)
+    xmin=10000
+    ymin=10000
+    xmax=0.001
+    ymax=0.001
+    for tech in techlist:
+        power_minstring = "capital_cost_of_power_based_components_min"
+        power_maxstring = "capital_cost_of_power_based_components_max"
+        energy_minstring = "capital_cost_of_energy_based_components_min"
+        energy_maxstring = "capital_cost_of_energy_based_components_max"
+        minpowerlink=''
+        maxpowerlink=''
+        minenergylink=''
+        maxenergylink=''
+        minpowerlabel=''
+        maxpowerlabel=''
+        minenergylabel=''
+        maxenergylabel=''
+        if Source.query.filter_by(id=Parameter.query.filter_by(technology_name=tech.name).filter_by(
+                name=power_minstring).first().source_id).first() is not None:
+            minpowerlink = Source.query.filter_by(id=Parameter.query.filter_by(technology_name=tech.name).filter_by(
+                name=power_minstring).first().source_id).first().link
+            minpowerlabel = 'min. cost of power based components: ' + Source.query.filter_by(id=Parameter.query.filter_by(technology_name=tech.name).filter_by(
+                name=power_minstring).first().source_id).first().author + ', ' + str(Source.query.filter_by(
+                id=Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_minstring).first().source_id).first().releaseyear)
+        if Source.query.filter_by(id=Parameter.query.filter_by(technology_name=tech.name).filter_by(
+                    name=power_maxstring).first().source_id).first() is not None:
+            maxpowerlink = Source.query.filter_by(id=Parameter.query.filter_by(technology_name=tech.name).filter_by(
+                    name=power_maxstring).first().source_id).first().link
+            maxpowerlabel = 'max. cost of power based components: ' + Source.query.filter_by(id=Parameter.query.filter_by(technology_name=tech.name).filter_by(
+                name=power_maxstring).first().source_id).first().author + ', ' + str(Source.query.filter_by(
+                id=Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_maxstring).first().source_id).first().releaseyear)
+        if Source.query.filter_by(id=Parameter.query.filter_by(technology_name=tech.name).filter_by(
+                name=energy_minstring).first().source_id).first() is not None:
+            minenergylink = Source.query.filter_by(id=Parameter.query.filter_by(technology_name=tech.name).filter_by(
+                name=energy_minstring).first().source_id).first().link
+            minenergylabel = 'min. cost of energy based components: ' + Source.query.filter_by(id=Parameter.query.filter_by(technology_name=tech.name).filter_by(
+                name=energy_minstring).first().source_id).first().author + ', ' + str(Source.query.filter_by(
+                id=Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_minstring).first().source_id).first().releaseyear)
+        if Source.query.filter_by(id=Parameter.query.filter_by(technology_name=tech.name).filter_by(
+                name=energy_maxstring).first().source_id).first() is not None:
+            maxenergylink = Source.query.filter_by(id=Parameter.query.filter_by(technology_name=tech.name).filter_by(
+                name=energy_maxstring).first().source_id).first().link
+            maxenergylabel = 'max. cost of energy based components: ' + Source.query.filter_by(id=Parameter.query.filter_by(technology_name=tech.name).filter_by(
+                name=energy_maxstring).first().source_id).first().author + ', ' + str(Source.query.filter_by(
+                id=Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_maxstring).first().source_id).first().releaseyear)
+        xy_chart.add(f"{tech.name}", [
+            {'value': (Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_minstring).first().value,
+                       Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_minstring).first().value),
+             'label': minenergylabel,
+             'xlink': {'href': minenergylink, 'target': '_blank'}},
+            {'value': (Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_minstring).first().value,
+                       Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_maxstring).first().value),
+             'label': minpowerlabel,
+             'xlink': {'href': minpowerlink, 'target': '_blank'}},
+            {'value': (Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_maxstring).first().value,
+                       Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_maxstring).first().value),
+             'label': maxenergylabel,
+             'xlink': {'href': maxenergylink, 'target': '_blank'}},
+            {'value': (Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_maxstring).first().value,
+                       Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_minstring).first().value),
+             'label': maxpowerlabel,
+             'xlink': {'href': maxpowerlink, 'target': '_blank'}},
+            {'value': (Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_minstring).first().value,
+                       Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_minstring).first().value),
+             'label': minenergylabel,
+             'xlink': {'href': minenergylink, 'target': '_blank'}}])
+
+        if Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_minstring).first().value is not None:
+            xmin = min(xmin, Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_minstring).first().value)
+            xmax = max(xmax, Parameter.query.filter_by(technology_name=tech.name).filter_by(name=power_maxstring).first().value)
+        if Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_minstring).first().value is not None:
+            ymin = min(ymin, Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_minstring).first().value)
+            ymax = max(ymax, Parameter.query.filter_by(technology_name=tech.name).filter_by(name=energy_maxstring).first().value)
+
+
+        xup = 10**int(math.floor(math.log10(xmax)))
+        yup = 10**int(math.floor(math.log10(ymax)))
+        while xup < xmax:
+            xup=xup+10**int(math.floor(math.log10(xmax)))
+        while yup < ymax:
+            yup=yup+10**int(math.floor(math.log10(ymax)))
+
+    xy_chart.xrange = (10**int(math.floor(math.log10(xmin))), xup)
+    xy_chart.range = (10**int(math.floor(math.log10(ymin))), yup)
     xy_chart.render()
     return xy_chart.render_data_uri()
